@@ -5,8 +5,13 @@ const filePath = path.join(__dirname, '..', 'data', 'users.json');
 
 function getUsers(req, res) {
   return getDataFromFile(filePath)
-    .then((users) => res.send(users))
-    .catch((err) => res.status(500).send(err));
+    .then((users) => {
+      if (!users) {
+        return res.status(404).send({ message: 'Ресурс не найден' });
+      }
+      return res.send(users);
+    })
+    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
 }
 
 function getUser(req, res) {
@@ -18,7 +23,7 @@ function getUser(req, res) {
       }
       return res.send(user);
     })
-    .catch((err) => res.status(500).send(err));
+    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
 }
 
 module.exports = {
