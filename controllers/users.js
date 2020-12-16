@@ -1,12 +1,10 @@
 const { ENOENT } = require('constants');
-const path = require('path');
-const getDataFromFile = require('../helpers/readFiles');
+const User = require('../models/user');
 
-const filePath = path.join(__dirname, '..', 'data', 'users.json');
-
+// Находим всех пользователей
 function getUsers(req, res) {
-  return getDataFromFile(filePath)
-    .then((users) => res.send(users))
+  User.find({})
+    .then((users) => res.status(200).send(users))
     .catch((err) => {
       if (err.code === ENOENT) {
         return res.status(404).send({ message: 'Ресурс не найден' });
@@ -15,18 +13,58 @@ function getUsers(req, res) {
     });
 }
 
+// Находим конкретного пользователя
 function getUser(req, res) {
-  return getDataFromFile(filePath)
-    .then((users) => users.find((user) => user._id === req.params.id))
+  User.findById(req.params.id)
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: 'Нет пользователя с таким id' });
       }
-      return res.send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.code === ENOENT) {
-        return res.status(404).send({ message: 'Ресурс не найден' });
+      if (err.name === 'CastError') {
+        return res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      return res.status(500).send({ message: 'Ошибка сервера' });
+    });
+}
+
+// Создаем пользователя
+function createUser(req, res) {
+  const { name, about, avatar } = req.body;
+  User.create({ name, about, avatar })
+    .then((user) => res.status(200).send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Введены неверные данные' });
+      }
+      return res.status(500).send({ message: 'Ошибка сервера' });
+    });
+}
+
+// Обновляем профиль
+function updateProfile(req, res) {
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about })
+    .then((user) => res.status(200).send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Введены неверные данные' });
+      }
+      return res.status(500).send({ message: 'Ошибка сервера' });
+    });
+}
+
+// Обновляем аватар
+function updateAvatar(req, res) {
+  const { avatar } = req.body;
+
+  User.findByIdAndUpdate(req.user._id, { avatar })
+    .then((user) => res.status(200).send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Введены неверные данные' });
       }
       return res.status(500).send({ message: 'Ошибка сервера' });
     });
@@ -35,4 +73,7 @@ function getUser(req, res) {
 module.exports = {
   getUsers,
   getUser,
+  createUser,
+  updateProfile,
+  updateAvatar,
 };
