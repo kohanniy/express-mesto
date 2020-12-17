@@ -47,12 +47,21 @@ function createUser(req, res) {
 function updateProfile(req, res) {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about })
-    .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Введены неверные данные' });
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Нет пользователя с таким id' });
       }
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(200).send({ data: user });
+    })
+    .catch((err) => {
+      switch (err.name) {
+        case 'CastError':
+          return res.status(404).send({ message: 'Пользователь не найден' });
+        case 'ValidationError':
+          return res.status(400).send({ message: 'Введены неверные данные' });
+        default:
+          return res.status(500).send({ message: 'Ошибка сервера' });
+      }
     });
 }
 
@@ -61,12 +70,21 @@ function updateAvatar(req, res) {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar })
-    .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Введены неверные данные' });
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Нет пользователя с таким id' });
       }
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(200).send({ data: user });
+    })
+    .catch((err) => {
+      switch (err.name) {
+        case 'CastError':
+          return res.status(404).send({ message: 'Пользователь не найден' });
+        case 'ValidationError':
+          return res.status(400).send({ message: 'Введены неверные данные' });
+        default:
+          return res.status(500).send({ message: 'Ошибка сервера' });
+      }
     });
 }
 

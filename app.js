@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const usersRouter = require('./routes/usersRouter');
 const cardsRouter = require('./routes/cardsRouter');
-const notFoundRouter = require('./routes/notFoundRoutes');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -25,7 +24,7 @@ app.use((req, res, next) => {
 });
 app.use('/', usersRouter);
 app.use('/', cardsRouter);
-app.use('*', notFoundRouter);
+app.use('*', (req, res) => res.status(404).send({ message: 'Запрашиваемый ресурс не найден' }));
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
