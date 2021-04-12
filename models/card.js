@@ -14,11 +14,11 @@ const cardSchema = new mongoose.Schema({
     match: checkUrl,
   },
   owner: {
-    type: mongoose.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
   likes: {
-    type: [mongoose.ObjectId],
+    type: [mongoose.Schema.Types.ObjectId],
     default: [],
   },
   createdAt: {
