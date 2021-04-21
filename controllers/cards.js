@@ -31,13 +31,17 @@ function deleteCard(req, res) {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Карточка не найдена' });
+        return Promise.reject(new Error('Карточка не найдена'));
+      }
+
+      if (card.owner.toString() !== req.user._id) {
+        return Promise.reject(new Error('Вы не можете удалять карточки других пользователей'));
       }
       return res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Карточка не найдена' });
+        return res.status(404).send({ message: err.message });
       }
       return res.status(500).send({ message: 'Ошибка сервера' });
     });

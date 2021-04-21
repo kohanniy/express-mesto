@@ -1,5 +1,24 @@
 const { ENOENT } = require('constants');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+
+function login(req, res) {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.send({ token });
+      // res.cookie('jwt', token, {
+      //   maxAge: 3600000 * 24 * 7,
+      //   httpOnly: true,
+      // });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
+}
 
 // Находим всех пользователей
 function getUsers(req, res) {
@@ -32,9 +51,18 @@ function getUser(req, res) {
 
 // Создаем пользователя
 function createUser(req, res) {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.status(200).send({ data: user }))
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      email: req.body.email,
+      password: hash,
+      name: req.body.name,
+      about: req.body.about,
+      avatar: req.body.avatar,
+    }))
+    .then((user) => {
+      const { _id, email } = user;
+      res.status(201).send({ _id, email });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Введены неверные данные' });
@@ -89,6 +117,7 @@ function updateAvatar(req, res) {
 }
 
 module.exports = {
+  login,
   getUsers,
   getUser,
   createUser,
