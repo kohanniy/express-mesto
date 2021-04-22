@@ -10,7 +10,7 @@ module.exports = {
   rules: {
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
     'object-curly-newline': ['error', { multiline: true }],
-    'func-names': ['error', 'as-needed'],
+    'func-names': 'off',
     'consistent-return': 'off',
   },
 };
