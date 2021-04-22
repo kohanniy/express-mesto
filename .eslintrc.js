@@ -9,7 +9,7 @@ module.exports = {
   parserOptions: { ecmaVersion: 12 },
   rules: {
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
-    'object-curly-newline': ['error', { multiline: true }],
+    'object-curly-newline': 'off',
     'func-names': 'off',
     'consistent-return': 'off',
   },
