@@ -26,15 +26,17 @@ function createCard(req, res, next) {
 
 // Удаляем карточку
 function deleteCard(req, res, next) {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Нет такой карточки');
       }
-      if (card.owner.toString() !== req.user._id) {
+      if (!card.owner.equals(req.user._id)) {
         throw new ForbiddenError('Вы не можете удалять карточки других пользователей');
       }
-      return res.status(200).send({ data: card });
+
+      card.remove();
+      return res.status(200).send({ message: 'Карточка была удалена' });
     })
     .catch(next);
 }

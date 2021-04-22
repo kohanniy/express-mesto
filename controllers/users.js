@@ -60,7 +60,9 @@ function createUser(req, res, next) {
       if (err.name === 'MongoError' || err.code === 11000) {
         throw new ConflictError('Пользователь с таким email уже существует');
       }
-      throw new ValidationError('Введены неверные данные');
+      if (err.name === 'ValidationError') {
+        throw new ValidationError('Введены неверные данные');
+      }
     })
     .catch(next);
 }
