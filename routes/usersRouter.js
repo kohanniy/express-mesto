@@ -3,8 +3,8 @@ const { getUsers, getMe, getUser, updateProfile, updateAvatar } = require('../co
 const { checkId, checkUpdateProfile, checkUpdateAvatar } = require('../middlewares/userRequestValidation');
 
 usersRouter.get('/users', getUsers);
-usersRouter.get('users/me', getMe);
 usersRouter.get('/users/:id', checkId, getUser);
+usersRouter.get('users/me', getMe);
 usersRouter.patch('/users/me', checkUpdateProfile, updateProfile);
 usersRouter.patch('/users/me/avatar', checkUpdateAvatar, updateAvatar);
 
