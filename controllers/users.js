@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const AuthError = require('../errors/AuthError');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const ConflictError = require('../errors/ConflictError');
@@ -14,9 +13,6 @@ function login(req, res, next) {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
     })
-    .catch(() => {
-      throw new AuthError('Неправильная почта или пароль');
-    })
     .catch(next);
 }
 
@@ -24,8 +20,17 @@ function login(req, res, next) {
 function getUsers(req, res, next) {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch(() => {
-      throw new NotFoundError('Пользователи не найдены');
+    .catch(next);
+}
+
+// Находим себя
+function getMe(req, res, next) {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      }
+      return res.status(200).send(user);
     })
     .catch(next);
 }
@@ -58,13 +63,15 @@ function createUser(req, res, next) {
     })
     .catch((err) => {
       if (err.name === 'MongoError' || err.code === 11000) {
-        throw new ConflictError('Пользователь с таким email уже существует');
+        const error = new ConflictError('Пользователь с таким email уже существует');
+        next(error);
       }
       if (err.name === 'ValidationError') {
-        throw new ValidationError('Введены неверные данные');
+        const error = new ValidationError('Введены неверные данные');
+        next(error);
       }
-    })
-    .catch(next);
+      next(err);
+    });
 }
 
 // Обновляем профиль
@@ -75,12 +82,15 @@ function updateProfile(req, res, next) {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
       }
-      return res.status(200).send({ data: user });
+      return res.status(200).send(user);
     })
-    .catch(() => {
-      throw new ValidationError('Введены неверные данные');
-    })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        const error = new ValidationError('Введены неверные данные');
+        next(error);
+      }
+      next(err);
+    });
 }
 
 // Обновляем аватар
@@ -92,17 +102,21 @@ function updateAvatar(req, res, next) {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
       }
-      return res.status(200).send({ data: user });
+      return res.status(200).send(user);
     })
-    .catch(() => {
-      throw new ValidationError('Введены неверные данные');
-    })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        const error = new ValidationError('Введены неверные данные');
+        next(error);
+      }
+      next(err);
+    });
 }
 
 module.exports = {
   login,
   getUsers,
+  getMe,
   getUser,
   createUser,
   updateProfile,
