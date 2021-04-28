@@ -25,7 +25,7 @@ function getUsers(req, res, next) {
 
 // Находим себя
 function getMe(req, res, next) {
-  User.findById(req.user._id)
+  User.findById(req.user)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
