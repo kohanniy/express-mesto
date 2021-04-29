@@ -65,7 +65,11 @@ function createUser(req, res, next) {
 // Обновляем профиль
 function updateProfile(req, res, next) {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    { new: true, runValidators: true },
+  )
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
@@ -85,7 +89,11 @@ function updateProfile(req, res, next) {
 function updateAvatar(req, res, next) {
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+    { new: true, runValidators: true },
+  )
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
