@@ -29,6 +29,17 @@ function getUsers(req, res, next) {
     .catch(next);
 }
 
+function getMe(req, res, next) {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      }
+      return res.status(200).send(user);
+    })
+    .catch(next);
+}
+
 // Находим конкретного пользователя
 function getUser(req, res, next) {
   User.findById(req.params.id === 'me' ? req.user : req.params.id)
@@ -118,6 +129,7 @@ function updateAvatar(req, res, next) {
 module.exports = {
   login,
   getUsers,
+  getMe,
   getUser,
   createUser,
   updateProfile,
