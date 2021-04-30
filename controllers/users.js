@@ -42,7 +42,7 @@ function getMe(req, res, next) {
 
 // Находим конкретного пользователя
 function getUser(req, res, next) {
-  User.findById(req.params.id === 'me' ? req.user : req.params.id)
+  User.findById(req.params.id)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
