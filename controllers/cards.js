@@ -26,7 +26,7 @@ function createCard(req, res, next) {
 
 // Удаляем карточку
 function deleteCard(req, res, next) {
-  Card.findById(req.params.cardId)
+  Card.findById(req.params.id)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Нет такой карточки');
@@ -44,7 +44,7 @@ function deleteCard(req, res, next) {
 // Ставим лайк
 function likeCard(req, res, next) {
   Card.findByIdAndUpdate(
-    req.params.cardId,
+    req.params.id,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
@@ -60,7 +60,7 @@ function likeCard(req, res, next) {
 // Удаляем лайк
 function dislikeCard(req, res, next) {
   Card.findByIdAndUpdate(
-    req.params.cardId,
+    req.params.id,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
