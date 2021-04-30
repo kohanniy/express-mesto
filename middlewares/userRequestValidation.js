@@ -17,9 +17,9 @@ const checkNewUser = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required().pattern(/https?:\/\/[www.]?[0-9a-z-]{2,}\.[a-z0-9]{2,6}[a-z0-9-._~:/?#[\]@!$&'()*+,;=]*/),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/https?:\/\/[www.]?[0-9a-z-]{2,}\.[a-z0-9]{2,6}[a-z0-9-._~:/?#[\]@!$&'()*+,;=]*/),
   }),
 });
 
