@@ -37,7 +37,13 @@ function getMe(req, res, next) {
       }
       return res.status(200).send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        const error = new NotFoundError('Нет пользователя с таким id');
+        next(error);
+      }
+      next(err);
+    });
 }
 
 // Находим конкретного пользователя
@@ -49,7 +55,13 @@ function getUser(req, res, next) {
       }
       return res.status(200).send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        const error = new NotFoundError('Нет пользователя с таким id');
+        next(error);
+      }
+      next(err);
+    });
 }
 
 // Создаем пользователя
@@ -98,6 +110,10 @@ function updateProfile(req, res, next) {
         const error = new ValidationError('Введены неверные данные');
         next(error);
       }
+      if (err.name === 'CastError') {
+        const error = new NotFoundError('Нет пользователя с таким id');
+        next(error);
+      }
       next(err);
     });
 }
@@ -120,6 +136,10 @@ function updateAvatar(req, res, next) {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const error = new ValidationError('Введены неверные данные');
+        next(error);
+      }
+      if (err.name === 'CastError') {
+        const error = new NotFoundError('Нет пользователя с таким id');
         next(error);
       }
       next(err);
