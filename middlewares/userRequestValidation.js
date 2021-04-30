@@ -8,8 +8,8 @@ const checkLogin = celebrate({
 });
 
 const checkId = celebrate({
-  body: Joi.object().keys({
-    _id: Joi.string().alphanum().length(24).hex(),
+  params: Joi.object().keys({
+    id: Joi.string().alphanum().length(24).hex(),
   }),
 });
 
