@@ -47,9 +47,9 @@ app.get('/crash-test', () => {
 app.post('/signup', checkNewUser, createUser);
 app.post('/signin', checkLogin, login);
 
-// app.use(auth);
-app.use('/', auth, usersRouter);
-app.use('/', auth, cardsRouter);
+app.use(auth);
+app.use('/', usersRouter);
+app.use('/', cardsRouter);
 app.use('*', () => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
