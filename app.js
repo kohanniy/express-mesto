@@ -30,19 +30,14 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 app.use(helmet());
-app.use(limiter);
+
 app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(requestLogger);
-
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
+app.use(limiter);
 
 app.post('/signup', checkNewUser, createUser);
 app.post('/signin', checkLogin, login);
